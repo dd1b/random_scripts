@@ -1,5 +1,5 @@
 from pymisp import ExpandedPyMISP
-from config import MISP_URL, MISP_KEY, VERIFY_CERT
+from config import MISP_URL, MISP_KEY, VERIFY_CERT, FILE_FLAG
 import warnings, pdb
 
 import requests, json
