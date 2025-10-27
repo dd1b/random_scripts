@@ -77,20 +77,27 @@ def get_events_by_galaxy_cluster_tag(tags):
 
 
 def main():
-    countries = ["RU", "CN"]
-    #get all clusters which have desired country attribute 
-    clusters = get_galaxy_clusters_by_country(countries)
-
-    if not clusters:
-        print("No clusters found.")
-        return
     all_tags = []
-    for cluster in clusters:
-        cluster_info = cluster.get("GalaxyCluster", {})
-        cluster_uuid = cluster_info.get("uuid")
-        cluster_value = cluster_info.get("value")
-        cluster_tag_name = cluster_info.get("tag_name")
-        all_tags.append(cluster_tag_name)
+
+    if FILE_FLAG: # needed in case the version of MISP don't have the search cluster by attributes capability. Then the clusters will be manual input
+        all_tags = ['misp-galaxy:threat-actor="Sofacy"','misp-galaxy:threat-actor="APT 16"']
+    else:
+
+        countries = ["IR", "RO"]
+        #get all clusters which have desired country attribute 
+        clusters = get_galaxy_clusters_by_country(countries)
+
+        if not clusters:
+            print("No clusters found.")
+            return
+    
+        
+        for cluster in clusters:
+            cluster_info = cluster.get("GalaxyCluster", {})
+            cluster_uuid = cluster_info.get("uuid")
+            cluster_value = cluster_info.get("value")
+            cluster_tag_name = cluster_info.get("tag_name")
+            all_tags.append(cluster_tag_name)
         
     # search events with selected galaxy clusters
     events = get_events_by_galaxy_cluster_tag(all_tags)
@@ -103,7 +110,7 @@ def main():
         total_attributes += int(event_data.get('attribute_count'))
         print(f"  ➤ Event ID: {event_data.get('id')}, Info: {event_data.get('info')}") #stats  could be done by galaxy and tags
     
-    print(f"\nTotal galaxy clusters identified: {len(clusters)}")
+    print(f"\nTotal galaxy clusters identified: {len(all_tags)}")
     print(f"Total events identified: {len(events)} and they contain {total_attributes} attributes")
 
 if __name__ == "__main__":
